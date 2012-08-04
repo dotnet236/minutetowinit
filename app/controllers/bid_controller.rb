@@ -1,5 +1,15 @@
 class BidController < ApplicationController
 
+  def index
+    bids = Bid.find(:listing_id => params[:listing_id])
+    render json: bid
+  end
+
+  def show
+    bid = Bid.find(params[:id])
+    render json: bid
+  end
+
   def new 
     @listing = Listing.find(params[:listing_id])
   end
