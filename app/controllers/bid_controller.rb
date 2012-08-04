@@ -1,7 +1,7 @@
 class BidController < ApplicationController
 
   def index
-    bids = Bid.find(:listing_id => params[:listing_id])
+    bid = Bid.all(:conditions => "listing_id = #{params[:listing_id]}")
     render json: bid
   end
 
