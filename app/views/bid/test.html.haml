@@ -1,0 +1,14 @@
+%script
+
+  Pusher.log = function(message) {
+    if (window.console && window.console.log) window.console.log(message);
+  };
+
+  // Flash fallback logging - don't include this in production
+  WEB_SOCKET_DEBUG = true;
+
+  var pusher = new Pusher('81e6ec22b6f7e2bbe1fa');
+  var channel = pusher.subscribe('test_channel');
+  channel.bind('my_event', function(data) {
+    alert(data);
+  });
