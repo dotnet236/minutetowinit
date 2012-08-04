@@ -6,11 +6,12 @@
   buffer = null
   testcanvas = null
 
-  firstbid =
-    x: 5
-    y: 6
-    width: 80
-    height: 60
+  firstbid = new Array()
+  firstbid['x'] = 0.1
+  firstbid['y'] = 0.2
+  firstbid['width'] = 0.5
+  firstbid['height'] = 0.5
+  firstbid['bid_amount'] = 10
 
   bids = [firstbid]
 
@@ -76,7 +77,14 @@
     draw_rect x, y, width, height, fill, "#080"
 
   draw_bid = (bid) ->
-    draw_rect bid.x, bid.y, bid.width, bid.height, "#f00", "#080"
+    draw_rect(
+      bid.x * browserWidth,
+      bid.y * browserHeight,
+      bid.width * browserWidth,
+      bid.height * browserHeight,
+      "#f00",
+      "#080"
+      )
 
   draw_bids = (bids) ->
     for bid in bids
@@ -103,10 +111,10 @@
       json =
         'bid':
           'bid_amount': 1
-          'x': x
-          'y': y
-          'width': width
-          'height': height
+          'x': x / browserWidth
+          'y': y / browserHeight
+          'width': width / browserWidth
+          'height': height / browserHeight
 
       $.post "/listing/1/bid", json
       bids.push json['bid']
