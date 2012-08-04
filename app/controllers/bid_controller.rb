@@ -1,4 +1,5 @@
 class BidController < ApplicationController
+  before_filter :authenticate_user!
 
   def index
     bid = Bid.all(:conditions => "listing_id = #{params[:listing_id]}")

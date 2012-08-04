@@ -99,12 +99,13 @@
       width = x2 - x
       height = y2 - y
       dragging = false
-  #    $.post "/listing/1/bid/new/
       bid =
+        bid_amount: 1
         x: x
         y: y
         width: width
         height: height
+      $.post "/listing/1/bid", bid
       bids.push bid
       draw_all()
 

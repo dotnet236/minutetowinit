@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
 
   private 
 
+=begin
   def stored_location_for(resource_or_scope)
     nil
   end
@@ -14,4 +15,5 @@ class ApplicationController < ActionController::Base
 
     return '/latest_listing'
   end
+=end
 end
