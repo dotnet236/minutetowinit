@@ -99,14 +99,17 @@
       width = x2 - x
       height = y2 - y
       dragging = false
-      bid =
-        bid_amount: 1
-        x: x
-        y: y
-        width: width
-        height: height
-      $.post "/listing/1/bid", bid
-      bids.push bid
+
+      json =
+        'bid':
+          'bid_amount': 1
+          'x': x
+          'y': y
+          'width': width
+          'height': height
+
+      $.post "/listing/1/bid", json
+      bids.push json['bid']
       draw_all()
 
   methods =
