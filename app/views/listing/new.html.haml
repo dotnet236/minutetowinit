@@ -1,0 +1,17 @@
+= form_for @listing, :url => "/listing", :method => "post" do |form|
+  = form.hidden_field :longitude
+  = form.hidden_field :latitude
+  %div.tableContainer
+    %table
+      %tr
+        %td
+          #wrapper
+            %div#browse
+              %span
+                Upload Image
+            = form.file_field :image, :tabindex => "1"
+
+      %tr
+        %td
+          = submit_tag "Post", :class => "postButton", :tabindex=>"0"
+
