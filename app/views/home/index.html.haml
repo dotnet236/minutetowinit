@@ -1,0 +1,35 @@
+/[if lt IE 7] <p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p>
+#container
+  %header
+    %hgroup
+      %h1
+        MinutesTo
+        %img{:src => "assets/logo.png"}/
+        %span{:style => "color:#f57621;"} Win It.com
+      %h2 Buy or sell anything in minutes!
+  #main{:role => "main"}
+    .button.green-button
+      %a{"data-toggle" => "modal", :href => "#action", :title => "Buy Stuff"} Buy Stuff
+    %img{:alt => "", :src => "assets/junk.png"}/
+    .button.orange-button
+      %a{"data-toggle" => "modal", :href => "#action", :title => "Buy Stuff"} Sell Stuff
+  %footer
+#action.modal.hide
+  %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
+  #sign-in
+    %h2 Please sign in
+    %img{:alt => "Sign in with Facebook", "data-service" => "facebook", :src => "assets/logo-facebook.jpg"}/
+    %img{:alt => "Sign in with Google", "data-service" => "google", :src => "assets/logo-google.jpg"}/
+    %img{:alt => "Sign in with Twitter", "data-service" => "twitter", :src => "assets/logo-twitter.jpg"}/
+    %div{:style => "display:none;"}
+      %form#form-sign-in{:action => "test.php", :method => "POST"}
+        %fieldset
+          %input#username{:placeholder => "Username", :type => "text"}/
+          %input#username{:placeholder => "Password", :type => "password"}/
+        %input.button.orange-button{:type => "submit", :value => "Log in"}/
+        %a#reset-sign-in{:href => "#", :title => "Log in with a different service"} Back
+  #buy
+  #sell
+
+:javascript
+  window.jQuery || document.write('<\/script>')

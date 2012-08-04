@@ -12,4 +12,5 @@
 //= require jquery
 //= require jquery_ujs
 //= require bid
+//= require bootstrap-modal
 //= require_tree .
