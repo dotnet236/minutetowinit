@@ -14,3 +14,5 @@
 /log/*.log
 /tmp
 /public/system
+
+/app/assets/stylesheets/.sass-cache/

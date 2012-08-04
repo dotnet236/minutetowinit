@@ -1,8 +1,16 @@
 :javascript
   $(function() {
-    $('#main').bidCanvas({
-      imageUrl: "'#{@listing.image.url}'"
+
+    $document = $(document);
+
+    $("#main_background")
+      .width($document.width())
+      .height($document.height());
+
+    $('#main_background').bidCanvas({
+      image: $('img#background_image').get(0)
     });
   });
 
-#main
+#main_background
+%img.hide#background_image{:src => @listing.image.url}
