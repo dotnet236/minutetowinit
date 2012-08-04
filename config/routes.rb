@@ -4,4 +4,8 @@ Minutetowinit::Application.routes.draw do
   root :to => 'home#index'
 
   resources :listing
+
+  scope "listing/:listing_id" do
+    resources :bid, :only=> [:new, :create]
+  end
 end
