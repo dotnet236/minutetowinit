@@ -1,1 +1,8 @@
-%img{ :src => @listing.image.url }
+:javascript
+  $(function() {
+    $('#main').bidCanvas({
+      imageUrl: "'#{@listing.image.url}'"
+    });
+  });
+
+#main
