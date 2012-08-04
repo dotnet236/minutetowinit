@@ -4,9 +4,8 @@ MTWI.forms =
     # Gets which service we're trying to sign in as; stored in the data-service attribute of the logo image
     service = $(o).data("service")
 
-    console.log $("#sign-in > div")
     # Show the sign in form
-    $("#sign-in > div").show()
+    $('form#existing_user').parent().show()
 
     # Hide whichever sign in services weren't selected
     $("#sign-in > img").each ->
@@ -23,6 +22,30 @@ $(() ->
     MTWI.forms.signIn this
   )
 
-  $("#reset-sign-in").click ->
-    MTWI.forms.resetSignIn()
+  $("a#register").click ->
+    $('form#existing_user').parent().hide()
+    $('form#new_user').parent().show()
+
+  $("a#existing").click ->
+    $('form#new_user').parent().hide()
+    $('form#existing_user').parent().show()
+
+  $("#buy_button").click((evt) ->
+    if window.authenticated
+      window.location.href = '/latest_listing'
+      evt.stopPropogation()
+      evt.preventDefault()
+      return false
+    else
+      $("#existing_user").find("[name='selling']").val(false)
+  )
+  $("#sell_button").click((evt) ->
+    if window.authenticated
+      window.location.href = '/listing/new'
+      evt.stopPropogation()
+      evt.preventDefault()
+      return false
+    else
+      $("#existing_user").find("[name='selling']").val(true)
+  )
 )
