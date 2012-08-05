@@ -3,7 +3,7 @@ class CheckoutController < ApplicationController
     wepay = WePay.new('97711', '16f8003b49')
 
     listing = Listing.find(params[:listing_id])
-    redirect_uri = "http://localhost:3000/listing/#{params[:listing_id]}/wepay/new"
+    redirect_uri = "http://minutetowinit:3000/listing/#{params[:listing_id]}/wepay/new"
 
     response = wepay.call('/checkout/create', current_user.access_token, {
       'account_id' => listing.account_id,

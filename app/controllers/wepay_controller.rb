@@ -10,7 +10,7 @@ class WepayController < ApplicationController
   def new
     wepay = WePay.new('97711', '16f8003b49')
 
-    redirect_uri = "http://localhost:3000/listing/#{params[:listing_id]}/wepay/new"
+    redirect_uri = "http://minutetowinit.me/listing/#{params[:listing_id]}/wepay/new"
 
     if params[:code].nil?
       url = wepay.oauth2_authorize_url(redirect_uri)
