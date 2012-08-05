@@ -43,18 +43,19 @@
       do (bid) ->
         for bid2 in bids
           do (bid2) ->
-            if bid.id != bid2.id and Math.abs(bid.x - bid2.x) < 0.05 && Math.abs(bid.y - bid2.y) < 0.05 && Math.abs(bid.width - bid2.width) < 0.05 && Math.abs(bid.height - bid2.height) < 0.05
-              console.log "two in the same place: " + bid.id + ", " + bid2.id
+            if bid.id != bid2.id and Math.abs(bid.x - bid2.x) < 0.05 and
+               Math.abs(bid.y - bid2.y) < 0.05 and 
+               Math.abs(bid.width - bid2.width) < 0.05 and 
+               Math.abs(bid.height - bid2.height) < 0.05
               if bid.id < bid2.id
                 i = bids.indexOf bid
                 bids.splice i, 1
                 dups = true
-                break
               else
                 i = bids.indexOf bid2
                 bids.splice i, 1
                 dups = true
-                break
+              return
     if dups then removeDuplicates
 
   onmousedown = (e) ->
