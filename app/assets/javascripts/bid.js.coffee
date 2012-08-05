@@ -284,6 +284,7 @@
         bids.push bid
         removeDuplicates()
         draw_all()
+        console.log highBids()
     )
 
   onresize = ->
@@ -297,6 +298,30 @@
     $canvasdiv.width browserWidth
     $canvasdiv.height browserHeight
     draw_all()
+
+  bidDataUrl = (bid) ->
+    srcX = bid.x * $img.get(0).width
+    srcY = bid.y * $img.get(0).height
+    srcWidth = bid.width * $img.get(0).width
+    srcHeight = bid.height * $img.get(0).height
+    console.log "srcX: " + srcX + ", srcY: " + srcY
+    bidCanvas = document.createElement "canvas"
+    bidCanvas.width = srcWidth
+    bidCanvas.height = srcHeight
+    bidCanvas.ctx = bidCanvas.getContext '2d'
+    bidCanvas.ctx.drawImage $img.get(0), srcX, srcY, srcWidth, srcHeight, 0, 0, srcWidth, srcHeight
+    bidCanvas.toDataURL()
+
+  highBids = ->
+    high_bids = []
+    for bid in bids
+      do (bid) ->
+        if bid.user_id == window.currentUser
+          high_bid =
+            'url': bidDataUrl bid
+            'amount': bid.bid_amount
+          high_bids.push high_bid
+    high_bids
 
   methods =
     init: (opts) ->
@@ -332,6 +357,7 @@
       $window = $ window
       $window.resize onresize
 
+      draw_all()
       $img.load(() ->
         $.get "/listing/" + window.listing + "/bid", (oldBids) ->
           subscribe()
