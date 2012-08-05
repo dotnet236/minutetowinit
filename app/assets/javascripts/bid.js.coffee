@@ -4,7 +4,11 @@
   browserWidth = null
   browserHeight = null
   buffer = null
+  $buffer = null
   testcanvas = null
+  $testcanvas = null
+  canvasdiv = null
+  $canvasdiv = null
   bids = []
 
   x = 0
@@ -12,7 +16,6 @@
   width = 0
   height = 0
   dragging = false
-  $testcanvas = null
 
   onmousedown = (e) ->
     $testcanvas = $ testcanvas
@@ -69,7 +72,14 @@
     draw_rect x, y, width, height, fill, "#080"
 
   draw_bid = (bid) ->
-    draw_rect bid.x, bid.y, bid.width, bid.height, "#f00", "#080"
+    draw_rect(
+      bid.x * browserWidth,
+      bid.y * browserHeight,
+      bid.width * browserWidth,
+      bid.height * browserHeight,
+      "#f00",
+      "#080"
+      )
 
   draw_bids = (bids) ->
     for bid in bids
@@ -96,10 +106,10 @@
       json =
         'bid':
           'bid_amount': 1
-          'x': x
-          'y': y
-          'width': width
-          'height': height
+          'x': x / browserWidth
+          'y': y / browserHeight
+          'width': width / browserWidth
+          'height': height / browserHeight
 
       $.post "/listing/1/bid", json, (bid) ->
         if !bidExists(bid)
@@ -121,6 +131,18 @@
         draw_all()
     )
 
+  onresize = ->
+    $window = $ window
+    browserWidth = $window.width()
+    browserHeight = $window.height()
+    testcanvas.width = browserWidth
+    testcanvas.height = browserHeight
+    buffer.width = browserWidth
+    buffer.height = browserHeight
+    $canvasdiv.width browserWidth
+    $canvasdiv.height browserHeight
+    draw_all()
+
   methods =
     init: (opts) ->
       options =
@@ -128,6 +150,8 @@
 
       $this = $ this
       $.extend options, opts
+      canvasdiv = this
+      $canvasdiv = $ canvasdiv
 
       browserWidth = $this.width()
       browserHeight = $this.height()
@@ -138,6 +162,7 @@
       buffer.width = browserWidth
       buffer.height = browserHeight
       buffer.ctx = buffer.getContext '2d'
+      $buffer = $ buffer
 
       testcanvas = document.createElement "canvas"
       testcanvas.width = browserWidth
@@ -148,6 +173,9 @@
       $testcanvas.mousedown onmousedown
       $testcanvas.mouseup onmouseup
       $testcanvas.mousemove onmousemove
+
+      $window = $ window
+      $window.resize onresize
 
       $img.load(() ->
         draw_all()

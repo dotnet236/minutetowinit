@@ -17,10 +17,10 @@ ActiveRecord::Schema.define(:version => 20120804173126) do
     t.integer  "user_id"
     t.integer  "listing_id"
     t.decimal  "bid_amount", :precision => 10, :scale => 0
-    t.integer  "x"
-    t.integer  "y"
-    t.integer  "width"
-    t.integer  "height"
+    t.float    "x"
+    t.float    "y"
+    t.float    "width"
+    t.float    "height"
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
   end
