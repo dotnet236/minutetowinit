@@ -357,6 +357,7 @@
             do (bid) ->
               if !bidExists bid
                 bids.push bid
+          bids = removeDuplicates bids
           draw_all()
           if options.load
             options.load()
