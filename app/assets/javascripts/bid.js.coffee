@@ -9,15 +9,7 @@
   $testcanvas = null
   canvasdiv = null
   $canvasdiv = null
-
-  firstbid = new Array()
-  firstbid['x'] = 0.1
-  firstbid['y'] = 0.2
-  firstbid['width'] = 0.5
-  firstbid['height'] = 0.5
-  firstbid['bid_amount'] = 10
-
-  bids = [firstbid]
+  bids = []
 
   x = 0
   y = 0
@@ -162,9 +154,25 @@
           'width': width / browserWidth
           'height': height / browserHeight
 
-      $.post "/listing/1/bid", json
-      bids.push json['bid']
-      draw_all()
+      $.post "/listing/1/bid", json, (bid) ->
+        if !bidExists(bid)
+          bids.push bid
+          draw_all()
+
+  bidExists = (newBid) ->
+    for bid in bids
+      return true if bid.id == newBid.id
+
+    return false
+
+  subscribe = () ->
+    pusher = new Pusher '81e6ec22b6f7e2bbe1fa'
+    channel = pusher.subscribe 'bids'
+    channel.bind('new-bid', (bid) ->
+      if !bidExists(bid)
+        bids.push bid
+        draw_all()
+    )
 
   onresize = ->
     $window = $ window
@@ -214,6 +222,7 @@
 
       $img.load(() ->
         draw_all()
+        subscribe()
       )
 
   $.fn.bidCanvas = (method) ->
