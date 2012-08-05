@@ -105,14 +105,14 @@
     draw_rect x, y, width, height, fill, "#080"
 
   draw_bid = (bid) ->
-    draw_rect(
-      bid.x * browserWidth,
-      bid.y * browserHeight,
-      bid.width * browserWidth,
-      bid.height * browserHeight,
-      "#f00",
-      "#080"
-      )
+    color = "#0f0"
+    if bid.user_id != window.currentUser
+      color = "#f00"
+    buffer.ctx.fillStyle = color
+    buffer.ctx.strokeStyle = color
+    buffer.ctx.fillRect bid.x * browserWidth, bid.y * browserHeight, bid.width * browserWidth, bid.height * browserHeight
+    buffer.ctx.lineWidth = 1
+    buffer.ctx.fill
 
   draw_bids = (bids) ->
     for bid in bids

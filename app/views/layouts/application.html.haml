@@ -17,7 +17,7 @@
     %link{:href => "http://fonts.googleapis.com/css?family=Satisfy", :rel => "stylesheet", :type => "text/css"}
     %link{:href => "css/styles-sale.css", :rel => "stylesheet"}
     :javascript
-      window.currentUser = #{current_user.id}
+      window.currentUser = #{if current_user then current_user.id else "null" end}
 
   %body
     = yield
