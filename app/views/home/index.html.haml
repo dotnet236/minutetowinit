@@ -47,9 +47,12 @@
       %h2
         Confirm your location
       %h3
-        Location: Waltham, MA
+        Location: New York City, NY
       %p{}
         %a{:href=>'#', :title => 'Change Location' }Change location
+      %p{}
+        %a.button.orange-button{:href => 'last_listing', :style => 'color:white;font-size: 1.2em;text-decoration: none;padding:0.4em 1.3em' }
+          Confirm
     %div#sell.hide
       %h2
         Upload a photo of your stuff
@@ -62,7 +65,7 @@
                 %img{ :src => 'images/select-photo.png', :alt => 'Select a photo to upload', :style => 'width:200px;height:150px;margin-top:20px;'}
                 %input{:type=>"hidden", :name=>"authenticity_token", :value=>form_authenticity_token.to_s}
                 %div
-                  %input.button.orange-button{:type => "submit", :value => "Post", :disable => 'disabled'}
+                  %input.button.orange-button{:type => "submit", :value => "Post"}
   #buy
   #sell
 

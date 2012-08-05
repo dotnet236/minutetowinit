@@ -5,6 +5,8 @@ Minutetowinit::Application.routes.draw do
 
   resources :listing
 
+  resources :last_listing, :only => [:index]
+
   scope "listing/:listing_id" do
     resources :bid, :except => [:delete]
   end

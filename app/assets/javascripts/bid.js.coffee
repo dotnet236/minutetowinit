@@ -20,7 +20,6 @@
   maxHeight = 0
 
   updateConstraints = ->
-    console.log "updating constraints"
     maxWidth = 1.0 - x / browserWidth
     maxHeight = 1.0 - y / browserHeight
     normalX = x / browserWidth
@@ -35,7 +34,6 @@
       do (bid) ->
         if bid.x < normalX + normalWidth and bid.x + bid.width > normalX and bid.y >= normalY + normalHeight - 0.05
           maxHeight = Math.min maxHeight, bid.y - normalY
-    console.log "maxWidth: " + maxWidth + ", maxHeight: " + maxHeight
 
   removeDuplicates = ->
     dups = false
@@ -50,8 +48,6 @@
                Math.abs(bid.width - bid2.width) < 0.05 and
                Math.abs(bid.height - bid2.height) < 0.05 and
                bid.bid_amount < bid2.bid_amount
-              console.log "bid " + bid.id + " @ " + bid.bid_amount + " is duplicated by bid " + bid2.id + " @ " + bid2.bid_amount
-              console.log "two in the same place: " + bid.id + ":" + bid.bid_amount + ", " + bid2.id + ":" + bid2.bid_amount
               duplicated = true
         if duplicated == false
           noDupArr.push bid
@@ -68,7 +64,6 @@
         do (bid) ->
           bidx2 = bid.x + bid.width
           bidx2 *= browserWidth
-          console.log "[ " + curX + ", " + curY + " ]"
           if curX >= bidx2 and curX <= bidx2 + 32 and curY >= bid.y * browserHeight and curY <= bid.y * browserHeight + bid.height * browserHeight
             existing = bid
       if existing
@@ -162,7 +157,6 @@
     buffer.ctx.arcTo x1, y2, x1, y2 - r, r
     buffer.ctx.lineTo x1, y1 + r
     buffer.ctx.arcTo x1, y1, x1 + r, y1, r
-    console.log fillStyle
     if fillStyle
       buffer.ctx.fillStyle = fillStyle
       buffer.ctx.fill()
@@ -181,10 +175,8 @@
     normalY2 = bid.y + bid.height
     normalY2 *= browserHeight
     draw_rounded_rect color, 5, bid.x * browserWidth, bid.y * browserHeight, normalX2, normalY2, 8
-    
     browserX = bid.x * browserWidth
     browserY = bid.y * browserHeight
-    console.log "[ " + normalX2 + ", " + browserY + ", " + (normalX2 + 32) + ", " + (browserY + 24) + " ]"
     draw_rounded_rect color, 5, normalX2, browserY, normalX2 + 32, browserY + 24, 8, "#4f4"
 
     buffer.ctx.save()
@@ -226,7 +218,6 @@
         height = Math.floor normalHeight * browserHeight
         updateConstraints()
       dragging = false
-      console.log "width: " + width / browserWidth + ", height: " + height / browserHeight
       if width / browserWidth > 0.05 and height / browserHeight > 0.05
         json =
           'bid':

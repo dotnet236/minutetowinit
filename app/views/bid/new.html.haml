@@ -10,6 +10,60 @@
     $('#main_background').bidCanvas({
       image: $('img#background_image').get(0)
     });
+
+    var railsDate = '"#{@listing.completed_at.localtime}"'.split(' -')[0]
+    var dateAndTime = railsDate.split(' ')
+    var date = dateAndTime[0]
+    var time = dateAndTime[1]
+
+    var yearMonthDay = date.split('-')
+    var year = yearMonthDay[0].replace('"', '')
+    var month = yearMonthDay[1]
+    var day = yearMonthDay[2]
+
+    var hourMinuteSecond = time.split(':')
+    var hour = hourMinuteSecond[0]
+    var minute = hourMinuteSecond[1]
+    var second = hourMinuteSecond[2]
+
+    window.completedAt = new Date(
+        parseInt(year, 10),
+        parseInt(month, 10) - 1,
+        parseInt(day, 10),
+        parseInt(hour, 10),
+        parseInt(minute, 10),
+        parseInt(second, 10)
+    )
+
+    var timer = null;
+
+    var runTimer = function() {
+
+      if(timer)
+        clearTimeout(timer)
+
+      min = window.completedAt.getMinutes();
+      startTime = new Date(window.completedAt);
+      startTime.setMinutes(min - 1);
+
+      now = new Date();
+      if(now < startTime) {
+        timeToStart = parseInt(Math.floor((startTime - now) / 1000), 10)
+        $('#TimeToStart').modal('show')
+        $('#TimeToStart').find('span').text('Starting in ' + timeToStart + ' seconds...Get Ready!!!')
+      } else if (now > window.completedAt) {
+        $('#checkout.modal.hide').modal('show');
+      } else {
+        timeToEnd = parseInt(Math.floor((window.completedAt - now) / 1000), 10)
+        $('#TimeLeft').text(timeToEnd);
+        $('#TimeToStart').modal('hide')
+      }
+
+      timer = setTimeout(runTimer, 50);
+    }
+
+    runTimer();
+
   });
 
 #main_background
@@ -30,16 +84,25 @@
         %div
           %p
             Time left:
-            %span.color-yellow 2:36
+            %span#TimeLeft.color-yellow
         %div
           %p
             Location:
-            %span.color-yellow Waltham, MA
+            %span.color-yellow New Yok City, NY
       #bid-total
         Your total:
         %span.text-satisfy{:style => "font-size:1.4em;margin:0 .3em;"} $22.50
         %img{:alt => "", :src => "/assets/user-image.jpg"}/
+#TimeToStart.modal.hide
+  %h2
+    Starting in
+    %span.time
+
 #action.modal.hide
+  %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
+  %h2 Checkout
+
+#checkout.modal.hide
   %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
   %h2 Checkout
 
