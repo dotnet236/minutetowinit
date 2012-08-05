@@ -166,7 +166,7 @@ td { vertical-align: top; }
 		margin: 0 .4em;
 		cursor: pointer;
 	}
-		#form-sign-in > fieldset > input[type=text], #form-sign-in > fieldset > input[type=password] {
+		#form-sign-in fieldset input[type=text], #form-sign-in fieldset input[type=password] {
 			display: block;
 			width: 280px;
 			margin: .7em auto;
@@ -178,7 +178,7 @@ td { vertical-align: top; }
 			-moz-border-radius: 4px;
 			-webkit-border-radius: 4px;
 		}
-		#form-sign-in > input[type=submit] {
+		#form-sign-in input[type=submit] {
 			font-size: 1.6em;
 			color: #fff;
 			text-shadow: 1px 1px 1px #000;
