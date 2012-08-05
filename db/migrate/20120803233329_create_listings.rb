@@ -5,6 +5,7 @@ class CreateListings < ActiveRecord::Migration
       t.float :longitude
       t.datetime :completed_at
       t.integer :user_id
+      t.integer :account_id
 
       t.timestamps
     end

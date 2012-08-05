@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(:version => 20120804173126) do
     t.float    "longitude"
     t.datetime "completed_at"
     t.integer  "user_id"
+    t.integer  "account_id"
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
     t.string   "image_file_name"

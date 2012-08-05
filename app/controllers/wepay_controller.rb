@@ -8,20 +8,17 @@ require 'cgi'
 class WepayController < ApplicationController
 
   def new
-    wepay = WePay.new('55025', 'dc29f32c92')
+    wepay = WePay.new('97711', '16f8003b49')
 
-    redirect_uri = "http://localhost:3000/listing/#{:listing_id}/wepay/create"
-    url = wepay.oauth2_authorize_url(redirect_uri)
-    redirect_to(url)
-  end
+    redirect_uri = "http://localhost:3000/listing/#{params[:listing_id]}/wepay/new"
 
-  def create
-    redirect_uri = "http://localhost:3000/listing/#{:listing_id}/wepay/create"
-
-    if response['access_token'] != nil
-      wepay.oauth2_token(params[:code], redirect_uri)
+    if params[:code].nil?
+      url = wepay.oauth2_authorize_url(redirect_uri)
+      redirect_to(url)
     else
+      response = wepay.oauth2_token(params[:code], redirect_uri)
       access_token = response['access_token']
+
       current_user.access_token = access_token
       current_user.save
 
@@ -34,8 +31,8 @@ class WepayController < ApplicationController
         }
       )
 
-      listing = Listing.find(:listing_id)
-      listing.account_id = response[:account_id]
+      listing = Listing.find(params[:listing_id])
+      listing.account_id = response['account_id']
       listing.save
 
       redirect_to '/last_listing'
