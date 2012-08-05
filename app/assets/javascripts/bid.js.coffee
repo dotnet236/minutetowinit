@@ -80,10 +80,9 @@
     ctx.drawImage buffer, 0, 0
 
   clear = ->
-    buffer.ctx.fillStyle = "#000"
-    buffer.ctx.strokeStyle = "#000"
+    buffer.width = buffer.width
+    buffer.ctx.fillStyle = "#ff0"
     buffer.ctx.fillRect 0, 0, $testcanvas.width(), $testcanvas.height()
-    buffer.ctx.lineWidth = 1
     buffer.ctx.fill
 
   draw_image = ->
@@ -100,19 +99,40 @@
     )
 
   draw_currently_dragged_bid = ->
-    fill = "#0f0"
-    if dragging then fill = "rgba(0, 255, 0, 0.5)"
-    draw_rect x, y, width, height, fill, "#080"
+    newbid =
+      'x': x / browserWidth
+      'y': y / browserHeight
+      'width': width / browserWidth
+      'height': height / browserHeight
+      'user_id': window.currentUser
+      'bid_amount': 10
+    draw_bid newbid
 
   draw_bid = (bid) ->
-    color = "#0f0"
+    buffer.ctx = buffer.getContext "2d"
+    color = "#1BAD03"
     if bid.user_id != window.currentUser
-      color = "#f00"
-    buffer.ctx.fillStyle = color
+      color = "#F57621"
     buffer.ctx.strokeStyle = color
-    buffer.ctx.fillRect bid.x * browserWidth, bid.y * browserHeight, bid.width * browserWidth, bid.height * browserHeight
-    buffer.ctx.lineWidth = 1
-    buffer.ctx.fill
+    buffer.ctx.lineWidth = 8
+    buffer.ctx.moveTo bid.x * browserWidth + 8, bid.y * browserHeight
+    buffer.ctx.beginPath
+    normalX2 = bid.x + bid.width
+    normalX2 *= browserWidth
+    normalY2 = bid.y + bid.height
+    normalY2 *= browserHeight
+    buffer.ctx.lineTo normalX2 - 8, bid.y * browserHeight
+    buffer.ctx.arcTo normalX2, bid.y * browserHeight, normalX2, bid.y * browserHeight + 8, 8
+    buffer.ctx.lineTo normalX2, normalY2 - 8
+    buffer.ctx.arcTo normalX2, normalY2, normalX2 - 8, normalY2, 8
+    buffer.ctx.lineTo bid.x * browserWidth + 8, normalY2
+    buffer.ctx.arcTo bid.x * browserWidth, normalY2, bid.x * browserWidth, normalY2 - 8, 8
+    buffer.ctx.lineTo bid.x * browserWidth, bid.y * browserHeight + 8
+    buffer.ctx.arcTo bid.x * browserWidth, bid.y * browserHeight, bid.x * browserWidth + 8, bid.y * browserHeight, 8
+    buffer.ctx.lineWidth = 5
+    buffer.ctx.stroke();
+    buffer.ctx.stroke()
+    buffer.ctx.closePath()
 
   draw_bids = (bids) ->
     for bid in bids
@@ -122,8 +142,8 @@
   draw_all = ->
     clear()
     draw_image()
-    draw_currently_dragged_bid()
     draw_bids bids
+    draw_currently_dragged_bid()
     flip()
 
   onmouseup = (e) ->
