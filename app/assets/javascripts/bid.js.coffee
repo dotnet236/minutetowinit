@@ -294,7 +294,6 @@
     srcY = bid.y * $img.get(0).height
     srcWidth = bid.width * $img.get(0).width
     srcHeight = bid.height * $img.get(0).height
-    console.log "srcX: " + srcX + ", srcY: " + srcY
     bidCanvas = document.createElement "canvas"
     bidCanvas.width = srcWidth
     bidCanvas.height = srcHeight
@@ -304,7 +303,6 @@
 
   highBids = ->
     high_bids = []
-    console.log bids
     for bid in bids
       do (bid) ->
         if bid.user_id == window.currentUser

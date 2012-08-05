@@ -30,7 +30,7 @@ class ListingController < ApplicationController
 
     listing.completed_at = completed_at
     if listing.save
-      redirect_to :controller => 'bid', :action => 'new', :listing_id => listing.id
+      redirect_to :controller => 'wepay', :action => 'new'
     else
       throw 'Failed to create Listing'
     end

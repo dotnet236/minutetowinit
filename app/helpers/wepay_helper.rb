@@ -1,0 +1,2 @@
+module WepayHelper
+end

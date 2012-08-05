@@ -117,13 +117,15 @@
         %img{:alt => "", :src => "/assets/user-image.jpg"}/
 #TimeToStart.modal.hide
   %h2
-    Starting in
     %span.time
 
 #checkout.modal.hide
   %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
-  %h2 Checkout
+  %h1 Checkout
   #checkoutContainer{:style => 'height: 300px; overflow:auto;'}
+  %div
+    %a.button.orange-button{:href => '#', :style => 'margin-top:10px;color:white;font-size: 1.2em;text-decoration: none;padding:0.4em 1.3em' }
+      Checkout
 
 :javascript
   window.jQuery || document.write('<\/script>')
