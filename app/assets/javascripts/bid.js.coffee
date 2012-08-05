@@ -221,8 +221,13 @@
       $window.resize onresize
 
       $img.load(() ->
-        draw_all()
-        subscribe()
+        $.get "/listing/" + window.listing + "/bid", (oldBids) ->
+          subscribe()
+          for bid in oldBids
+            do (bid) ->
+              if !bidExists bid
+                bids.push bid
+          draw_all()
       )
 
   $.fn.bidCanvas = (method) ->
