@@ -154,7 +154,7 @@
           'width': width / browserWidth
           'height': height / browserHeight
 
-      $.post "/listing/1/bid", json, (bid) ->
+      $.post "/listing/" + window.listing + "/bid", json, (bid) ->
         if !bidExists(bid)
           bids.push bid
           draw_all()
