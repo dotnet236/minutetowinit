@@ -226,20 +226,20 @@
         height = Math.floor normalHeight * browserHeight
         updateConstraints()
       dragging = false
-
-      json =
-        'bid':
-          'bid_amount': 10
-          'x': x / browserWidth
-          'y': y / browserHeight
-          'width': width / browserWidth
-          'height': height / browserHeight
-
-      $.post "/listing/" + window.listing + "/bid", json, (bid) ->
-        if !bidExists(bid)
-          bids.push bid
-          removeDuplicates()
-          draw_all()
+      console.log "width: " + width / browserWidth + ", height: " + height / browserHeight
+      if width / browserWidth > 0.05 and height / browserHeight > 0.05
+        json =
+          'bid':
+            'bid_amount': 10
+            'x': x / browserWidth
+            'y': y / browserHeight
+            'width': width / browserWidth
+            'height': height / browserHeight
+        $.post "/listing/" + window.listing + "/bid", json, (bid) ->
+          if !bidExists(bid)
+            bids.push bid
+            removeDuplicates()
+      draw_all()
 
   bidExists = (newBid) ->
     for bid in bids
