@@ -312,7 +312,7 @@
           high_bids.push high_bid
     high_bids
 
-  loadBidsAndSubscribe = ->
+  loadBidsAndSubscribe = (options) ->
     $.get "/listing/" + window.listing + "/bid", (oldBids) ->
       subscribe()
       for bid in oldBids
@@ -361,10 +361,10 @@
 
       draw_all()
       if $img.get(0).complete
-        loadBidsAndSubscribe()
+        loadBidsAndSubscribe options
       else
         $img.load(() ->
-          loadBidsAndSubscribe()
+          loadBidsAndSubscribe options
         )
 
     highBids: () ->
