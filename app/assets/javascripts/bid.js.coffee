@@ -37,16 +37,58 @@
           maxHeight = Math.min maxHeight, bid.y - normalY
     console.log "maxWidth: " + maxWidth + ", maxHeight: " + maxHeight
 
+  removeDuplicates = ->
+    dups = false
+    for bid in bids
+      do (bid) ->
+        for bid2 in bids
+          do (bid2) ->
+            if bid.id != bid2.id and Math.abs(bid.x - bid2.x) < 0.05 && Math.abs(bid.y - bid2.y) < 0.05 && Math.abs(bid.width - bid2.width) < 0.05 && Math.abs(bid.height - bid2.height) < 0.05
+              console.log "two in the same place: " + bid.id + ", " + bid2.id
+              if bid.id < bid2.id
+                i = bids.indexOf bid
+                bids.splice i, 1
+                dups = true
+                break
+              else
+                i = bids.indexOf bid2
+                bids.splice i, 1
+                dups = true
+                break
+    if dups then removeDuplicates
+
   onmousedown = (e) ->
     $testcanvas = $ testcanvas
     offset = $testcanvas.position document
     if e.which == 1
-      x = e.pageX - offset.left
-      y = e.pageY - offset.top
-      width = 0
-      height = 0
-      dragging = true
-      updateConstraints()
+      existing = null
+      for bid in bids
+        do (bid) ->
+          bidx2 = bid.x + bid.width
+          bidx2 *= browserWidth
+          if x >= bidx2 and x <= bidx2 + 32 and y >= bid.y * browserHeight and y <= bid.y * browserHeight + bid.height * browserHeight
+            existing = bid
+      if existing
+        alert "clicked on bid " + existing.id
+        json =
+          'bid':
+            'bid_amount': existing.bid_amount + 10
+            'x': existing.x
+            'y': existing.y
+            'width': existing.width
+            'height': existing.height
+        $.post "/listing/" + window.listing + "/bid", json, (bid) ->
+          if !bidExists(bid)
+            bids.push bid
+            removeDuplicates()
+            draw_all()
+      else
+        x = e.pageX - offset.left
+        y = e.pageY - offset.top
+        width = 0
+        height = 0
+        dragging = true
+        updateConstraints()
 
   draw_rect = (x, y, w, h, fill, stroke) ->
     buffer.ctx.fillStyle = fill
@@ -81,9 +123,6 @@
 
   clear = ->
     buffer.width = buffer.width
-    buffer.ctx.fillStyle = "#ff0"
-    buffer.ctx.fillRect 0, 0, $testcanvas.width(), $testcanvas.height()
-    buffer.ctx.fill
 
   draw_image = ->
     buffer.ctx.drawImage(
@@ -108,31 +147,49 @@
       'bid_amount': 10
     draw_bid newbid
 
+  draw_rounded_rect = (color, lineWidth, x1, y1, x2, y2, r, fillStyle) ->
+    buffer.ctx.save()
+    buffer.ctx.beginPath()
+    buffer.ctx.moveTo x1 + r, y1
+    buffer.ctx.lineTo x2 - r, y1
+    buffer.ctx.arcTo x2, y1, x2, y1 + r, r
+    buffer.ctx.lineTo x2, y2 - r
+    buffer.ctx.arcTo x2, y2, x2 - r, y2, r
+    buffer.ctx.lineTo x1 + r, y2
+    buffer.ctx.arcTo x1, y2, x1, y2 - r, r
+    buffer.ctx.lineTo x1, y1 + r
+    buffer.ctx.arcTo x1, y1, x1 + r, y1, r
+    console.log fillStyle
+    if fillStyle
+      buffer.ctx.fillStyle = fillStyle
+      buffer.ctx.fill()
+    buffer.ctx.lineWidth = lineWidth
+    buffer.ctx.strokeStyle = color
+    buffer.ctx.stroke()
+    buffer.ctx.closePath()
+    buffer.ctx.restore()
+
   draw_bid = (bid) ->
-    buffer.ctx = buffer.getContext "2d"
     color = "#1BAD03"
     if bid.user_id != window.currentUser
       color = "#F57621"
-    buffer.ctx.strokeStyle = color
-    buffer.ctx.lineWidth = 8
-    buffer.ctx.moveTo bid.x * browserWidth + 8, bid.y * browserHeight
-    buffer.ctx.beginPath
     normalX2 = bid.x + bid.width
     normalX2 *= browserWidth
     normalY2 = bid.y + bid.height
     normalY2 *= browserHeight
-    buffer.ctx.lineTo normalX2 - 8, bid.y * browserHeight
-    buffer.ctx.arcTo normalX2, bid.y * browserHeight, normalX2, bid.y * browserHeight + 8, 8
-    buffer.ctx.lineTo normalX2, normalY2 - 8
-    buffer.ctx.arcTo normalX2, normalY2, normalX2 - 8, normalY2, 8
-    buffer.ctx.lineTo bid.x * browserWidth + 8, normalY2
-    buffer.ctx.arcTo bid.x * browserWidth, normalY2, bid.x * browserWidth, normalY2 - 8, 8
-    buffer.ctx.lineTo bid.x * browserWidth, bid.y * browserHeight + 8
-    buffer.ctx.arcTo bid.x * browserWidth, bid.y * browserHeight, bid.x * browserWidth + 8, bid.y * browserHeight, 8
-    buffer.ctx.lineWidth = 5
-    buffer.ctx.stroke();
-    buffer.ctx.stroke()
-    buffer.ctx.closePath()
+    draw_rounded_rect color, 5, bid.x * browserWidth, bid.y * browserHeight, normalX2, normalY2, 8
+    
+    browserX = bid.x * browserWidth
+    browserY = bid.y * browserHeight
+    draw_rounded_rect color, 5, normalX2, browserY, normalX2 + 32, browserY + 24, 8, "#4f4"
+
+    buffer.ctx.save()
+    buffer.ctx.lineWidth = 1
+    buffer.ctx.fillStyle = "#000"
+    buffer.ctx.lineStyle = "#000"
+    buffer.ctx.font = "bold 12px sans-serif"
+    buffer.ctx.fillText bid.bid_amount + "¢", browserX + bid.width * browserWidth + 5, browserY + 15
+    buffer.ctx.restore()
 
   draw_bids = (bids) ->
     for bid in bids
@@ -168,7 +225,7 @@
 
       json =
         'bid':
-          'bid_amount': 1
+          'bid_amount': 10
           'x': x / browserWidth
           'y': y / browserHeight
           'width': width / browserWidth
