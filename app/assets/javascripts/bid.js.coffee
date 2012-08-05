@@ -16,6 +16,26 @@
   width = 0
   height = 0
   dragging = false
+  maxWidth = 0
+  maxHeight = 0
+
+  updateConstraints = ->
+    console.log "updating constraints"
+    maxWidth = 1.0 - x / browserWidth
+    maxHeight = 1.0 - y / browserHeight
+    normalX = x / browserWidth
+    normalY = y / browserHeight
+    normalWidth = width / browserWidth
+    normalHeight = height / browserHeight
+    for bid in bids
+      do (bid) ->
+        if bid.y < normalY + normalHeight and bid.y + bid.height > normalY and bid.x >= normalX + normalWidth - 0.05
+          maxWidth = Math.min maxWidth, bid.x - normalX
+    for bid in bids
+      do (bid) ->
+        if bid.x < normalX + normalWidth and bid.x + bid.width > normalX and bid.y >= normalY + normalHeight - 0.05
+          maxHeight = Math.min maxHeight, bid.y - normalY
+    console.log "maxWidth: " + maxWidth + ", maxHeight: " + maxHeight
 
   onmousedown = (e) ->
     $testcanvas = $ testcanvas
@@ -23,7 +43,10 @@
     if e.which == 1
       x = e.pageX - offset.left
       y = e.pageY - offset.top
+      width = 0
+      height = 0
       dragging = true
+      updateConstraints()
 
   draw_rect = (x, y, w, h, fill, stroke) ->
     buffer.ctx.fillStyle = fill
@@ -37,9 +60,19 @@
     offset = $testcanvas.position document
     if dragging
       x2 = e.pageX - offset.left
+      if x2 > x
+        normalNewWidth = x2 - x
+        normalNewWidth /= browserWidth
+        normalWidth = Math.min normalNewWidth, maxWidth
+        width = Math.floor normalWidth * browserWidth
+        updateConstraints()
       y2 = e.pageY - offset.top
-      width = x2 - x
-      height = y2 - y
+      if y2 > y
+        normalNewHeight = y2 - y
+        normalNewHeight /= browserHeight
+        normalHeight = Math.min normalNewHeight, maxHeight
+        height = Math.floor normalHeight * browserHeight
+        updateConstraints()
       draw_all()
 
   flip = ->
@@ -98,9 +131,19 @@
     offset = $testcanvas.position document
     if e.which == 1 and dragging
       x2 = e.pageX - offset.left
+      if x2 > x
+        normalNewWidth = x2 - x
+        normalNewWidth /= browserWidth
+        normalWidth = Math.min normalNewWidth, maxWidth
+        width = Math.floor normalWidth * browserWidth
+        updateConstraints()
       y2 = e.pageY - offset.top
-      width = x2 - x
-      height = y2 - y
+      if y2 > y
+        normalNewHeight = y2 - y
+        normalNewHeight /= browserHeight
+        normalHeight = Math.min normalNewHeight, maxHeight
+        height = Math.floor normalHeight * browserHeight
+        updateConstraints()
       dragging = false
 
       json =
