@@ -312,6 +312,18 @@
           high_bids.push high_bid
     high_bids
 
+  loadBidsAndSubscribe = (options) ->
+    $.get "/listing/" + window.listing + "/bid", (oldBids) ->
+      subscribe()
+      for bid in oldBids
+        do (bid) ->
+          if !bidExists bid
+            bids.push bid
+      bids = removeDuplicates bids
+      draw_all()
+      if options.load
+        options.load()
+
   methods =
     init: (opts) ->
       options =
@@ -348,18 +360,12 @@
       $window.resize onresize
 
       draw_all()
-      $img.load(() ->
-        $.get "/listing/" + window.listing + "/bid", (oldBids) ->
-          subscribe()
-          for bid in oldBids
-            do (bid) ->
-              if !bidExists bid
-                bids.push bid
-          bids = removeDuplicates bids
-          draw_all()
-          if options.load
-            options.load()
-      )
+      if $img.get(0).complete
+        loadBidsAndSubscribe options
+      else
+        $img.load(() ->
+          loadBidsAndSubscribe options
+        )
 
     highBids: () ->
       highBids()
