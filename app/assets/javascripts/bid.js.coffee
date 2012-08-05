@@ -268,7 +268,7 @@
     pusher = new Pusher '81e6ec22b6f7e2bbe1fa'
     channel = pusher.subscribe 'bids'
     channel.bind('new-bid', (bid) ->
-      if bid.user_id != window.currentUser || bid.listing_id != window.listing
+      if bid.listing_id != window.listing
         return
 
       if !bidExists(bid)
@@ -355,6 +355,7 @@
             do (bid) ->
               if !bidExists bid
                 bids.push bid
+          bids = removeDuplicates bids
           draw_all()
           if options.load
             options.load()
