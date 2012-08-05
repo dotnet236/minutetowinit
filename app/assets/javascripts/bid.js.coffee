@@ -5,14 +5,7 @@
   browserHeight = null
   buffer = null
   testcanvas = null
-
-  firstbid =
-    x: 5
-    y: 6
-    width: 80
-    height: 60
-
-  bids = [firstbid]
+  bids = []
 
   x = 0
   y = 0
@@ -108,9 +101,25 @@
           'width': width
           'height': height
 
-      $.post "/listing/1/bid", json
-      bids.push json['bid']
-      draw_all()
+      $.post "/listing/1/bid", json, (bid) ->
+        if !bidExists(bid)
+          bids.push bid
+          draw_all()
+
+  bidExists = (newBid) ->
+    for bid in bids
+      return true if bid.id == newBid.id
+
+    return false
+
+  subscribe = () ->
+    pusher = new Pusher '81e6ec22b6f7e2bbe1fa'
+    channel = pusher.subscribe 'bids'
+    channel.bind('new-bid', (bid) ->
+      if !bidExists(bid)
+        bids.push bid
+        draw_all()
+    )
 
   methods =
     init: (opts) ->
@@ -142,6 +151,7 @@
 
       $img.load(() ->
         draw_all()
+        subscribe()
       )
 
   $.fn.bidCanvas = (method) ->
