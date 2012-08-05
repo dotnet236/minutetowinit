@@ -1,7 +1,18 @@
+%script{:type => "text/javascript", :src=>"https://www.wepay.com/js/iframe.wepay.js"}
+
 :javascript
   $(function() {
 
     $document = $(document);
+
+    var getBidTotal = function() {
+      var myBids = $('#main_background').bidCanvas('highBids');
+      var bidTotal = 0;
+      for(var i = 0; i < myBids.length; i++){
+        bidTotal += parseInt(myBids[i].amount, 10);
+      }
+      return bidTotal / 100.00;
+    }
 
     var buildCheckout = function() {
       var now = new Date()
@@ -20,6 +31,7 @@
           $('#checkoutContainer').append(container);
         }
       }
+      $('#totalAmount').text('$' + getBidTotal());
     }
 
     $("#main_background")
@@ -82,7 +94,16 @@
         timer = setTimeout(runTimer, 50);
       }
 
+      $('#totalAmount').text('$' + getBidTotal());
+
     }
+
+    $('#checkout_button').click(function() {
+      $.get("/listing/" + window.listing + "/checkout/new?amount=" + getBidTotal(), function(result) {
+        $('#checkoutContainer').hide()
+        WePay.iframe_checkout("checkoutIFrame", result.checkout_uri);
+      })
+    });
 
     runTimer();
 
@@ -107,24 +128,26 @@
           %p
             Time left:
             %span#TimeLeft.color-yellow
+              0
         %div
           %p
             Location:
             %span.color-yellow New Yok City, NY
       #bid-total
         Your total:
-        %span.text-satisfy{:style => "font-size:1.4em;margin:0 .3em;"} $22.50
+        %span#totalAmount.text-satisfy{:style => "font-size:1.4em;margin:0 .3em;"} $0.00
         %img{:alt => "", :src => "/assets/user-image.jpg"}/
 #TimeToStart.modal.hide
   %h2
     %span.time
 
-#checkout.modal.hide
+#checkout.modal.hide{ :style => 'width:620px;' }
   %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
   %h1 Checkout
   #checkoutContainer{:style => 'height: 300px; overflow:auto;'}
+  #checkoutIFrame{}
   %div
-    %a.button.orange-button{:href => '#', :style => 'margin-top:10px;color:white;font-size: 1.2em;text-decoration: none;padding:0.4em 1.3em' }
+    %a#checkout_button.button.orange-button{:href => '#', :style => 'margin-top:10px;color:white;font-size: 1.2em;text-decoration: none;padding:0.4em 1.3em' }
       Checkout
 
 :javascript

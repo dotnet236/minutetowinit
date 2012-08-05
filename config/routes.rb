@@ -10,5 +10,6 @@ Minutetowinit::Application.routes.draw do
   scope "listing/:listing_id" do
     resources :bid, :except => [:delete]
     resources :wepay
+    resources :checkout
   end
 end
