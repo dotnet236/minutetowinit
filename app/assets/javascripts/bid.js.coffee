@@ -35,7 +35,7 @@
         if bid.x < normalX + normalWidth and bid.x + bid.width > normalX and bid.y >= normalY + normalHeight - 0.05
           maxHeight = Math.min maxHeight, bid.y - normalY
 
-  removeDuplicates = ->
+  removeDuplicates = (bids) ->
     dups = false
     noDupArr = []
     for bid in bids
@@ -51,7 +51,7 @@
               duplicated = true
         if duplicated == false
           noDupArr.push bid
-    bids = noDupArr
+    return noDupArr
 
   onmousedown = (e) ->
     $testcanvas = $ testcanvas
@@ -62,9 +62,10 @@
       existing = null
       for bid in bids
         do (bid) ->
+          btn_r = bidBidButtonRect bid
           bidx2 = bid.x + bid.width
           bidx2 *= browserWidth
-          if curX >= bidx2 and curX <= bidx2 + 32 and curY >= bid.y * browserHeight and curY <= bid.y * browserHeight + bid.height * browserHeight
+          if curX >= btn_r.x and curX <= btn_r.x + btn_r.w and curY >= btn_r.y and curY <= btn_r.y + btn_r.h
             existing = bid
       if existing
         json =
@@ -77,7 +78,7 @@
         $.post "/listing/" + window.listing + "/bid", json, (bid) ->
           if !bidExists(bid)
             bids.push bid
-            removeDuplicates()
+            bids = removeDuplicates(bids)
             draw_all()
       else
         x = curX
@@ -166,6 +167,23 @@
     buffer.ctx.closePath()
     buffer.ctx.restore()
 
+  bidAmountRect = (bid) ->
+    amt_r =
+      'x': (bid.x + bid.width) * browserWidth
+      'y': bid.y * browserHeight
+      'w': 48
+      'h': 24
+    amt_r
+
+  bidBidButtonRect = (bid) ->
+    amt_r = bidAmountRect bid
+    btn_r =
+      'x': amt_r.x + amt_r.w
+      'y': amt_r.y
+      'w': 42
+      'h': 24
+    btn_r
+
   draw_bid = (bid) ->
     color = "#1BAD03"
     if bid.user_id != window.currentUser
@@ -175,16 +193,24 @@
     normalY2 = bid.y + bid.height
     normalY2 *= browserHeight
     draw_rounded_rect color, 5, bid.x * browserWidth, bid.y * browserHeight, normalX2, normalY2, 8
-    browserX = bid.x * browserWidth
-    browserY = bid.y * browserHeight
-    draw_rounded_rect color, 5, normalX2, browserY, normalX2 + 32, browserY + 24, 8, "#4f4"
+    amt_r = bidAmountRect bid
+    draw_rounded_rect color, 5, amt_r.x, amt_r.y, amt_r.x + amt_r.w, amt_r.y + amt_r.h, 8, "#4f4"
+    btn_r = bidBidButtonRect bid
+    draw_rounded_rect color, 5, btn_r.x, btn_r.y, btn_r.x + btn_r.w, btn_r.y + btn_r.h, 8, "#4f4"
 
     buffer.ctx.save()
     buffer.ctx.lineWidth = 1
     buffer.ctx.fillStyle = "#000"
     buffer.ctx.lineStyle = "#000"
     buffer.ctx.font = "bold 12px sans-serif"
-    buffer.ctx.fillText bid.bid_amount + "¢", browserX + bid.width * browserWidth + 5, browserY + 15
+    buffer.ctx.fillText bid.bid_amount + "¢", amt_r.x + 5, amt_r.y + 15
+    buffer.ctx.restore()
+    buffer.ctx.save()
+    buffer.ctx.lineWidth = 1
+    buffer.ctx.fillStyle = "#000"
+    buffer.ctx.lineStyle = "#000"
+    buffer.ctx.font = "bold 12px sans-serif"
+    buffer.ctx.fillText "Bid!", btn_r.x + 5, btn_r.y + 15
     buffer.ctx.restore()
 
   draw_bids = (bids) ->
@@ -229,7 +255,7 @@
         $.post "/listing/" + window.listing + "/bid", json, (bid) ->
           if !bidExists(bid)
             bids.push bid
-            removeDuplicates()
+            bids = removeDuplicates(bids)
       draw_all()
 
   bidExists = (newBid) ->
@@ -247,7 +273,7 @@
 
       if !bidExists(bid)
         bids.push bid
-        removeDuplicates()
+        bids = removeDuplicates(bids)
         draw_all()
     )
 
@@ -263,10 +289,36 @@
     $canvasdiv.height browserHeight
     draw_all()
 
+  bidDataUrl = (bid) ->
+    srcX = bid.x * $img.get(0).width
+    srcY = bid.y * $img.get(0).height
+    srcWidth = bid.width * $img.get(0).width
+    srcHeight = bid.height * $img.get(0).height
+    console.log "srcX: " + srcX + ", srcY: " + srcY
+    bidCanvas = document.createElement "canvas"
+    bidCanvas.width = srcWidth
+    bidCanvas.height = srcHeight
+    bidCanvas.ctx = bidCanvas.getContext '2d'
+    bidCanvas.ctx.drawImage $img.get(0), srcX, srcY, srcWidth, srcHeight, 0, 0, srcWidth, srcHeight
+    bidCanvas.toDataURL()
+
+  highBids = ->
+    high_bids = []
+    console.log bids
+    for bid in bids
+      do (bid) ->
+        if bid.user_id == window.currentUser
+          high_bid =
+            'url': bidDataUrl bid
+            'amount': bid.bid_amount
+          high_bids.push high_bid
+    high_bids
+
   methods =
     init: (opts) ->
       options =
         image: null
+        load: null
 
       $this = $ this
       $.extend options, opts
@@ -297,6 +349,7 @@
       $window = $ window
       $window.resize onresize
 
+      draw_all()
       $img.load(() ->
         $.get "/listing/" + window.listing + "/bid", (oldBids) ->
           subscribe()
@@ -305,7 +358,12 @@
               if !bidExists bid
                 bids.push bid
           draw_all()
+          if options.load
+            options.load()
       )
+
+    highBids: () ->
+      highBids()
 
   $.fn.bidCanvas = (method) ->
     if methods[method]

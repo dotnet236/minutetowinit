@@ -3,12 +3,32 @@
 
     $document = $(document);
 
+    var buildCheckout = function() {
+      var now = new Date()
+
+      if (now > window.completedAt) {
+        var myBids = $('#main_background').bidCanvas('highBids');
+        $('#checkoutContainer').html('');
+        for(var i = 0; i < myBids.length; i++){
+          myBid = myBids[i];
+          var $img = $('<img/>').attr('src', myBid.url).width(100).height(150);
+          var dollarAmount = parseInt((myBid.amount / 100), 10);
+          var centAmount = parseInt(((myBid.amount % 100) / 10), 10) + '' + parseInt(((myBid.amount % 100) % 10), 10);
+          var $bid = $('<span/>').text('$' + dollarAmount + '.' + centAmount).attr('style', 'margin-left:100px;font-size:3em;');
+          var container = $('<div/>').attr('style', 'margin-bottom: 30px;');
+          container.append($img).append($bid);
+          $('#checkoutContainer').append(container);
+        }
+      }
+    }
+
     $("#main_background")
       .width($document.width())
       .height($document.height());
 
     $('#main_background').bidCanvas({
-      image: $('img#background_image').get(0)
+      image: $('img#background_image').get(0),
+      load: buildCheckout
     });
 
     var railsDate = '"#{@listing.completed_at.localtime}"'.split(' -')[0]
@@ -51,15 +71,17 @@
         timeToStart = parseInt(Math.floor((startTime - now) / 1000), 10)
         $('#TimeToStart').modal('show')
         $('#TimeToStart').find('span').text('Starting in ' + timeToStart + ' seconds...Get Ready!!!')
+        timer = setTimeout(runTimer, 50);
       } else if (now > window.completedAt) {
         $('#checkout.modal.hide').modal('show');
+        buildCheckout();
       } else {
         timeToEnd = parseInt(Math.floor((window.completedAt - now) / 1000), 10)
         $('#TimeLeft').text(timeToEnd);
         $('#TimeToStart').modal('hide')
+        timer = setTimeout(runTimer, 50);
       }
 
-      timer = setTimeout(runTimer, 50);
     }
 
     runTimer();
@@ -98,13 +120,10 @@
     Starting in
     %span.time
 
-#action.modal.hide
-  %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
-  %h2 Checkout
-
 #checkout.modal.hide
   %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
   %h2 Checkout
+  #checkoutContainer{:style => 'height: 300px; overflow:auto;'}
 
 :javascript
   window.jQuery || document.write('<\/script>')
