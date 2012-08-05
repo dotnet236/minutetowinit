@@ -21,10 +21,12 @@ class ListingController < ApplicationController
     listing.user = current_user
     last_listing = Listing.find(:last)
 
-    last_completed_at = last_listing.completed_at
-    completed_at = last_completed_at.advance(:minutes => 2)
+    if last_listing != nil
+      last_completed_at = last_listing.completed_at
+      completed_at = last_completed_at.advance(:minutes => 2)
+    end
 
-    if last_completed_at < Time.now.advance(:minutes => 1)
+    if last_listing == nil || last_completed_at < Time.now.advance(:minutes => 1)
       completed_at = Time.now.advance(:minutes => 2)
     end
 
