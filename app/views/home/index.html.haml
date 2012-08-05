@@ -12,35 +12,57 @@
       %a#buy_button{"data-toggle" => "modal", :href => "#action", :title => "Buy Stuff"} Buy Stuff
     %img{:alt => "", :src => "assets/junk.png"}
     .button.orange-button
-      %a#sell_button{"data-toggle" => "modal", :href => "#action", :title => "Buy Stuff"} Sell Stuff
+      %a#sell_button{"data-toggle" => "modal", :href => "#action", :title => "Sell Stuff"} Sell Stuff
   %footer
+
 #action.modal.hide
   %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
   #sign-in
-    %h2 Please sign in
     %div.hide
       %img{:alt => "Sign in with Facebook", "data-service" => "facebook", :src => "assets/logo-facebook.jpg"}
       %img{:alt => "Sign in with Google", "data-service" => "google", :src => "assets/logo-google.jpg"}
       %img{:alt => "Sign in with Twitter", "data-service" => "twitter", :src => "assets/logo-twitter.jpg"}
-    %div
-      %form#existing_user{"accept-charset" => "UTF-8", :action => "/users/sign_in", :method => "post"}
-        %fieldset
-          %input{:type => 'hidden', :value => '✓', :name => 'utf8' }
-          %input{:type => 'hidden', :name => 'selling', :value => 'true' }
-          %input{:type=>"hidden", :name=>"authenticity_token", :value=>form_authenticity_token.to_s}
-          %input#username{:name => "user[email]", :placeholder => "Email Address", :size => "30", :type => "email", :value => ""}
-          %input#username{:name => "user[password]", :placeholder => "Password", :size => "30", :type => "password", :value => ""}
-          %input.button.orange-button{:type => "submit", :value => "Log in"}
-        %a#register{:href => "#", :title => "Register"}  Register
-    %div{:style => "display:none;"}
-      %form#new_user{"accept-charset" => "UTF-8", :action => "/users", :method => "post"}
-        %fieldset
-          %input{:type=>"hidden", :name=>"authenticity_token", :value=>form_authenticity_token.to_s}
-          %input{:type => 'hidden', :name => 'selling', :value => 'true' }
-          %input#username{:name => "user[email]", :placeholder => "Email Address", :size => "30", :type => "email", :value => ""}
-          %input#username{:name => "user[password]", :placeholder => "Password", :size => "30", :type => "password", :value => ""}
-          %input.button.orange-button{:type => "submit", :value => "Register"}
-        %a#existing{:href => "#", :title => "Existing User"} Existing
+    %div#authentication
+      %h2 Please sign in
+      %div
+        %form#existing_user{"accept-charset" => "UTF-8", :action => "/users/sign_in", :method => "post"}
+          %fieldset
+            %input{:type => 'hidden', :value => '✓', :name => 'utf8' }
+            %input{:type => 'hidden', :name => 'selling', :value => 'true' }
+            %input{:type=>"hidden", :name=>"authenticity_token", :value=>form_authenticity_token.to_s}
+            %input#username{:name => "user[email]", :placeholder => "Email Address", :size => "30", :type => "email", :value => ""}
+            %input#username{:name => "user[password]", :placeholder => "Password", :size => "30", :type => "password", :value => ""}
+            %input.button.orange-button{:type => "submit", :value => "Log in"}
+          %a#register{:href => "#", :title => "Register"}  Register
+      %div.hide
+        %form#new_user{"accept-charset" => "UTF-8", :action => "/users", :method => "post"}
+          %fieldset
+            %input{:type=>"hidden", :name=>"authenticity_token", :value=>form_authenticity_token.to_s}
+            %input{:type => 'hidden', :name => 'selling', :value => 'true' }
+            %input#username{:name => "user[email]", :placeholder => "Email Address", :size => "30", :type => "email", :value => ""}
+            %input#username{:name => "user[password]", :placeholder => "Password", :size => "30", :type => "password", :value => ""}
+            %input.button.orange-button{:type => "submit", :value => "Register"}
+          %a#existing{:href => "#", :title => "Existing User"} Existing
+    %div#buy.hide
+      %h2
+        Confirm your location
+      %h3
+        Location: Waltham, MA
+      %p{}
+        %a{:href=>'#', :title => 'Change Location' }Change location
+    %div#sell.hide
+      %h2
+        Upload a photo of your stuff
+      %div{:style => 'width:100%;height: 250px' }
+        %div.photo_form
+          %form#create_listing{"enctype" => "multipart/form-data", "accept-charset" => "UTF-8", :action => "/listing", :method => "post"}
+            %fieldset
+              %input{:name => 'listing[image]', :type=>"file", :placeholder => 'Upload a photo of your stuff', :accept => 'image/*'}
+              %div.photo_form{ :style => 'display:none;'}
+                %img{ :src => 'images/select-photo.png', :alt => 'Select a photo to upload', :style => 'width:200px;height:150px;margin-top:20px;'}
+                %input{:type=>"hidden", :name=>"authenticity_token", :value=>form_authenticity_token.to_s}
+                %div
+                  %input.button.orange-button{:type => "submit", :value => "Post", :disable => 'disabled'}
   #buy
   #sell
 

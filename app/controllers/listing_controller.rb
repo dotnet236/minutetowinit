@@ -20,7 +20,7 @@ class ListingController < ApplicationController
     listing = Listing.new(model)
     listing.user = current_user
     if listing.save
-      render json: listing
+      redirect_to :controller => 'bid', :action => 'new', :listing_id => listing.id
     else
       throw 'Failed to create Listing'
     end

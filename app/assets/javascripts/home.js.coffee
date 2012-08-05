@@ -30,22 +30,50 @@ $(() ->
     $('form#new_user').parent().hide()
     $('form#existing_user').parent().show()
 
+  selling = true
+
   $("#buy_button").click((evt) ->
+    selling = false
+    $('form#existing_user').parent().show()
+    $("#existing_user").find("[name='selling']").val(false)
+    $('#authentication').toggle(!window.authenticated)
     if window.authenticated
-      window.location.href = '/latest_listing'
-      evt.stopPropogation()
-      evt.preventDefault()
-      return false
-    else
-      $("#existing_user").find("[name='selling']").val(false)
+      $('#authentication').hide()
+      toggleSellBuy()
   )
+
   $("#sell_button").click((evt) ->
+    selling = true
+    $('form#existing_user').parent().show()
+    $("#new_user").find("[name='selling']").val(true)
     if window.authenticated
-      window.location.href = '/listing/new'
-      evt.stopPropogation()
-      evt.preventDefault()
-      return false
-    else
-      $("#existing_user").find("[name='selling']").val(true)
+      $('#authentication').hide()
+      toggleSellBuy()
   )
+
+  toggleSellBuy = () ->
+    if selling
+      $('#sell').show()
+      $('#buy').hide()
+    else
+      $('#sell').hide()
+      $('#buy').show()
+
+  $('#existing_user').ajaxForm(() ->
+    $('#authentication').hide()
+    toggleSellBuy()
+  )
+
+  $('#new_user').ajaxForm(() ->
+    $('#authentication').hide()
+    toggleSellBuy()
+  )
+  $('#sell').find("input[type='file']").bind 'change', ->
+    return if @files.length = 0
+    file = @files[0]
+    reader = new FileReader()
+    reader.onload = (e) ->
+      $('#sell').find('.photo_form').show()
+      $('#sell').find('img').attr('src', e.target.result)
+    reader.readAsDataURL(file)
 )

@@ -16,3 +16,36 @@
 %img.hide#background_image{:src => @listing.image.url}
 
 %script{:src => 'http://js.pusher.com/1.11/pusher.min.js', :type => 'text/javascript' }
+
+/[if lt IE 7] <p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p>
+#container{ :style => 'position:fixed;top:0;margin:0px;' }
+  #main{:role => "main"}
+    %header
+      #hud
+        %div
+          %p
+            Viewers:
+            %span.color-yellow 23
+        %div
+          %p
+            Time left:
+            %span.color-yellow 2:36
+        %div
+          %p
+            Location:
+            %span.color-yellow Waltham, MA
+      #bid-total
+        Your total:
+        %span.text-satisfy{:style => "font-size:1.4em;margin:0 .3em;"} $22.50
+        %img{:alt => "", :src => "assets/user-image.jpg"}/
+    %img{:alt => "", :src => "assets/sale1.jpg"}/
+    .box-high-bid{:style => "position:absolute;top:0;left:90px;width:195px;height:460px;"}
+    .box-bid{:style => "position:absolute;top:533px;left:173px;width:145px;height:90px;"}
+  %footer
+    %a{"data-toggle" => "modal", :href => "#action", :title => "Checkout"} See Checkout Modal (temp)
+#action.modal.hide
+  %a.close-button-modal{"data-dismiss" => "modal", :href => "#"} x
+  %h2 Checkout
+
+:javascript
+  window.jQuery || document.write('<\/script>')
