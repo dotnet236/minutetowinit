@@ -39,37 +39,35 @@
 
   removeDuplicates = ->
     dups = false
+    noDupArr = []
     for bid in bids
       do (bid) ->
+        duplicated = false
         for bid2 in bids
           do (bid2) ->
-            if bid.id != bid2.id and Math.abs(bid.x - bid2.x) < 0.05 && Math.abs(bid.y - bid2.y) < 0.05 && Math.abs(bid.width - bid2.width) < 0.05 && Math.abs(bid.height - bid2.height) < 0.05
-              console.log "two in the same place: " + bid.id + ", " + bid2.id
-              if bid.id < bid2.id
-                i = bids.indexOf bid
-                bids.splice i, 1
-                dups = true
-                break
-              else
-                i = bids.indexOf bid2
-                bids.splice i, 1
-                dups = true
-                break
-    if dups then removeDuplicates
+            if bid.id != bid2.id and Math.abs(bid.x - bid2.x) < 0.05 && Math.abs(bid.y - bid2.y) < 0.05 && Math.abs(bid.width - bid2.width) < 0.05 && Math.abs(bid.height - bid2.height) < 0.05 and bid.bid_amount < bid2.bid_amount
+              console.log "bid " + bid.id + " @ " + bid.bid_amount + " is duplicated by bid " + bid2.id + " @ " + bid2.bid_amount
+              console.log "two in the same place: " + bid.id + ":" + bid.bid_amount + ", " + bid2.id + ":" + bid2.bid_amount
+              duplicated = true
+        if duplicated == false
+          noDupArr.push bid
+    bids = noDupArr
 
   onmousedown = (e) ->
     $testcanvas = $ testcanvas
     offset = $testcanvas.position document
+    curX = e.pageX - offset.left
+    curY = e.pageY - offset.top
     if e.which == 1
       existing = null
       for bid in bids
         do (bid) ->
           bidx2 = bid.x + bid.width
           bidx2 *= browserWidth
-          if x >= bidx2 and x <= bidx2 + 32 and y >= bid.y * browserHeight and y <= bid.y * browserHeight + bid.height * browserHeight
+          console.log "[ " + curX + ", " + curY + " ]"
+          if curX >= bidx2 and curX <= bidx2 + 32 and curY >= bid.y * browserHeight and curY <= bid.y * browserHeight + bid.height * browserHeight
             existing = bid
       if existing
-        alert "clicked on bid " + existing.id
         json =
           'bid':
             'bid_amount': existing.bid_amount + 10
@@ -83,8 +81,8 @@
             removeDuplicates()
             draw_all()
       else
-        x = e.pageX - offset.left
-        y = e.pageY - offset.top
+        x = curX
+        y = curY
         width = 0
         height = 0
         dragging = true
@@ -138,14 +136,15 @@
     )
 
   draw_currently_dragged_bid = ->
-    newbid =
-      'x': x / browserWidth
-      'y': y / browserHeight
-      'width': width / browserWidth
-      'height': height / browserHeight
-      'user_id': window.currentUser
-      'bid_amount': 10
-    draw_bid newbid
+    if dragging
+      newbid =
+        'x': x / browserWidth
+        'y': y / browserHeight
+        'width': width / browserWidth
+        'height': height / browserHeight
+        'user_id': window.currentUser
+        'bid_amount': 10
+      draw_bid newbid
 
   draw_rounded_rect = (color, lineWidth, x1, y1, x2, y2, r, fillStyle) ->
     buffer.ctx.save()
@@ -181,6 +180,7 @@
     
     browserX = bid.x * browserWidth
     browserY = bid.y * browserHeight
+    console.log "[ " + normalX2 + ", " + browserY + ", " + (normalX2 + 32) + ", " + (browserY + 24) + " ]"
     draw_rounded_rect color, 5, normalX2, browserY, normalX2 + 32, browserY + 24, 8, "#4f4"
 
     buffer.ctx.save()
@@ -234,6 +234,7 @@
       $.post "/listing/" + window.listing + "/bid", json, (bid) ->
         if !bidExists(bid)
           bids.push bid
+          removeDuplicates()
           draw_all()
 
   bidExists = (newBid) ->
@@ -248,6 +249,7 @@
     channel.bind('new-bid', (bid) ->
       if !bidExists(bid)
         bids.push bid
+        removeDuplicates()
         draw_all()
     )
 
