@@ -59,34 +59,12 @@
     curX = e.pageX - offset.left
     curY = e.pageY - offset.top
     if e.which == 1
-      existing = null
-      for bid in bids
-        do (bid) ->
-          btn_r = bidBidButtonRect bid
-          bidx2 = bid.x + bid.width
-          bidx2 *= browserWidth
-          if curX >= btn_r.x and curX <= btn_r.x + btn_r.w and curY >= btn_r.y and curY <= btn_r.y + btn_r.h
-            existing = bid
-      if existing
-        json =
-          'bid':
-            'bid_amount': existing.bid_amount + 10
-            'x': existing.x
-            'y': existing.y
-            'width': existing.width
-            'height': existing.height
-        $.post "/listing/" + window.listing + "/bid", json, (bid) ->
-          if !bidExists(bid)
-            bids.push bid
-            bids = removeDuplicates(bids)
-            draw_all()
-      else
-        x = curX
-        y = curY
-        width = 0
-        height = 0
-        dragging = true
-        updateConstraints()
+      x = curX
+      y = curY
+      width = 0
+      height = 0
+      dragging = true
+      updateConstraints()
 
   draw_rect = (x, y, w, h, fill, stroke) ->
     buffer.ctx.fillStyle = fill
@@ -120,7 +98,10 @@
     ctx.drawImage buffer, 0, 0
 
   clear = ->
-    buffer.width = buffer.width
+    buffer.ctx.clearRect 0, 0, buffer.width, buffer.height
+    buffer.ctx.rect 0, 0, buffer.width, buffer.height
+    buffer.ctx.fillStyle = "white"
+    buffer.ctx.fill()
 
   draw_image = ->
     buffer.ctx.drawImage(
@@ -144,6 +125,7 @@
         'height': height / browserHeight
         'user_id': window.currentUser
         'bid_amount': 10
+        'id': 'Dragged'
       draw_bid newbid
 
   draw_rounded_rect = (color, lineWidth, x1, y1, x2, y2, r, fillStyle) ->
@@ -196,7 +178,27 @@
     amt_r = bidAmountRect bid
     draw_rounded_rect color, 5, amt_r.x, amt_r.y, amt_r.x + amt_r.w, amt_r.y + amt_r.h, 8, "#4f4"
     btn_r = bidBidButtonRect bid
-    draw_rounded_rect color, 5, btn_r.x, btn_r.y, btn_r.x + btn_r.w, btn_r.y + btn_r.h, 8, "#4f4"
+
+    $bidBtn = $('#bid' + bid.id);
+    console.log($bidBtn.length == 0);
+    if ($bidBtn.length > 0)
+      $bidBtn.css('left', btn_r.x);
+      $bidBtn.css('top', btn_r.y);
+    else
+      $('#main_background').append('<button id="bid' + bid.id + '" style="font-size: 1.5em; position: absolute; top: ' + btn_r.y + 'px; left: ' + btn_r.x + 'px; width: ' + btn_r.w + 'px; height: ' + btn_r.h + 'px;">Bid!</button>');
+      $('#bid' + bid.id).click ->
+        json =
+          'bid':
+            'bid_amount': bid.bid_amount + 10
+            'x': bid.x
+            'y': bid.y
+            'width': bid.width
+            'height': bid.height
+        $.post "/listing/" + window.listing + "/bid", json, (bid) ->
+          if !bidExists(bid)
+            bids.push bid
+            bids = removeDuplicates(bids)
+            draw_all()
 
     buffer.ctx.save()
     buffer.ctx.lineWidth = 1
@@ -244,6 +246,7 @@
         height = Math.floor normalHeight * browserHeight
         updateConstraints()
       dragging = false
+      $('#bidDragged').remove();
       if width / browserWidth > 0.05 and height / browserHeight > 0.05
         json =
           'bid':
